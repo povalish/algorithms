@@ -4,56 +4,51 @@ class CaesarCipher:
    with a different one a fixed number of places down the alphabet.
   """
 
-  _alphabet = [None] * 26
-
-  _shift = 0
+  _encode_str = ''
+  _decode_str = ''
 
 
   def __init__(self, shift):
-    self._shift = shift
-
-    # generate alphabet
+    encoder = [None] * 26
+    decoder = [None] * 26
+    # generate encoder/decoder alphabet
     for i in range(26):
-      self._alphabet[i] = chr(i + ord('A'))
+      encoder[i] = chr(ord('A') + (i + shift) % 26)
+      decoder[i] = chr(ord('A') + (i - shift) % 26)
 
+    self._encode_str = ''.join(encoder)
+    self._decode_str = ''.join(decoder)
+
+
+  def encode(self, source_msg):
+    """Encrupt message"""
+    return self._transform(source_msg, self._encode_str)
+
+
+  def decode(self, source_msg):
+    """Decript message"""
+    return self._transform(source_msg, self._decode_str)
+
+
+  def _transform(self, source_msg, coder):
+    msg = list(source_msg)
+    for i in range(len(msg)):
+      if msg[i].isupper():
+        # get index of default string letter
+        j = ord(msg[i]) - ord('A')
+        msg[i] = coder[j]
+    return ''.join(msg)
+    
+
+if __name__ == '__main__':
+  cipher = CaesarCipher(3)
   
+  source_message = 'THE EAGLE IS IN PLAY; MEET AT JOE S.'
+  print(f'Sourc message: {source_message}')
 
-alphabet = [None] * 26
-for i in range(26):
-  alphabet[i] = chr(i + ord('A'))
+  encoded_message = cipher.encode(source_message)
+  print(f'Encoded message: {encoded_message}')
 
+  decoded_message = cipher.decode(encoded_message)
+  print(f'Decoded message: {decoded_message}')
 
-def encode(message):
-  splitted_message = list(message)
-  encoded_message = list(message)
-
-  for i in range(len(splitted_message)):
-    letter = splitted_message[i]
-    if letter.isupper():
-      actual_index = (ord(letter) - ord('A') + 3) % 26
-      encoded_message[i] = alphabet[actual_index]
-
-  return ''.join(encoded_message)
-
-
-def decode(message):
-  splitted_message = list(message)
-  decoded_message = list(message)
-
-  for i in range(len(splitted_message)):
-    letter = splitted_message[i]
-    if letter.isupper():
-      actual_index = (ord(letter) - ord('A') - 3) % 26
-      decoded_message[i] = alphabet[actual_index]
-
-  return ''.join(decoded_message)
-
-
-
-
-encoded = encode('THE EAGLE IS IN PLAY; MEET AT JOE S.')
-decoded = decode(encoded)
-
-print('Initial: THE EAGLE IS IN PLAY; MEET AT JOE S.')
-print(f'Encoded: {encoded}')
-print(f'Decoded: {decoded}')
